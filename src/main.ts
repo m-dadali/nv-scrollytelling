@@ -70,7 +70,6 @@ const svg = d3.select("#visualization")
 const mainGroup = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-// Create persistent chart layer that survives clearViz()
 const chartLayer = mainGroup.append("g").attr("class", "chart-layer");
 
 const xScale = d3.scaleLinear()
@@ -131,6 +130,7 @@ function renderFrame1() {
 
 function renderFrame2() {
     clearViz();
+    setVizOpacity(1);
     d3.select(".step[data-step='2'] .step-content").html(`
     <h2>Soybeans became a symbol of clean eating.</h2>
     <div class="icon-grid">
@@ -251,6 +251,7 @@ function renderFrame11() {
 }
 
 function renderFrame12() {
+    setVizOpacity(1);
     clearViz();
     d3.select(".step[data-step='12'] .step-content").html(`
     <h1>The soy paradox isn’t the exception.</h1>
@@ -278,6 +279,11 @@ function drawChartAxes() {
 
     yScale.domain([0, humanMax]);
     chartLayer.selectAll("g.axis").remove();
+
+    chartLayer.selectAll("g.chart-frame")
+        .data([null])
+        .join("g")
+        .attr("class", "chart-frame");
 
     chartLayer.append("g")
         .attr("class", "axis x-axis active")
@@ -320,7 +326,7 @@ function drawLegend() {
 }
 
 function drawStackedChart(options: { visible: ChartSeriesKey[]; background?: boolean; emphasis?: boolean }) {
-    clearViz();
+    chartLayer.selectAll("*").remove();
     drawChartAxes();
     drawLegend();
 
@@ -361,7 +367,7 @@ function drawStackedChart(options: { visible: ChartSeriesKey[]; background?: boo
 }
 
 function drawTreemap(source: CountrySummary[], opacity: number, highlightCountries: string[] = []) {
-    clearViz();
+    chartLayer.selectAll("*").remove();
 
     const root = d3.hierarchy<{ children: CountrySummary[] }>({children: source})
         .sum((d: any) => (d.total ?? 0))
