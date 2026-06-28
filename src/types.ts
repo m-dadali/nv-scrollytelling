@@ -15,8 +15,10 @@ export type CountrySummary = DataRow & {
 export type ChartSeriesKey = "human" | "animal" | "processed";
 export type StackedSeries = { key: ChartSeriesKey; values: Array<{ year: number; value: number }> };
 
+export type ComparisonKey = "human" | "animal" | "industrial";
+
 export type ComparisonValue = {
-    key: ChartSeriesKey;
+    key: ComparisonKey;
     label: string;
     value: number;
     pct: number;

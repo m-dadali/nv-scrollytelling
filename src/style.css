@@ -4,8 +4,10 @@
   --color-industrial: #d55b96;
   --dark-bg: #cdcac3; /* Deeper, softer stone/parchment */
   --light-bg: #d8d5ce;
-  --text-light: #524f4a;
+  --text-light: #45433f; /* darker secondary, stays readable even when slightly dimmed */
   --text-dark: #1e1d1b;
+  --link-color: #176043; /* darker green, passes AA on parchment */
+  --bar-text: #1e1d1b;   /* dark text for colored bars (white failed AA contrast) */
 
   font: 18px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   letter-spacing: 0.18px;
@@ -118,29 +120,30 @@ body {
 /* Typography */
 h1 {
   font-size: 3.5rem;
-  font-weight: 300;
+  font-weight: 400;
   margin: 0;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
   line-height: 1.2;
+  color: var(--text-dark);
 }
 
 h2 {
   font-size: 1.5rem;
   font-weight: 400;
   margin: 0 0 1rem;
-  opacity: 0.9;
+  color: var(--text-dark);
 }
 
 p {
   font-size: 1.1rem;
   margin: 0;
-  opacity: 0.8;
+  color: var(--text-dark);
   line-height: 1.6;
 }
 
 .subtitle {
   font-size: 1.3rem;
-  opacity: 0.7;
+  color: var(--text-light);
   margin-top: 1.5rem;
 }
 
@@ -156,7 +159,7 @@ p {
 
 .stat-label {
   font-size: 1rem;
-  opacity: 0.7;
+  color: var(--text-light);
   margin-top: 0.5rem;
 }
 
@@ -241,10 +244,8 @@ p {
   opacity: 0.3;
 }
 
-/* Ensure chart marks remain visible */
 .band {
   opacity: 0.95;
-  mix-blend-mode: multiply;
 }
 
 .band-human {
@@ -329,52 +330,58 @@ p {
 /* Comparison cards */
 .comparison-container {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   justify-content: center;
-  margin: 2rem 0;
+  align-items: flex-start;
+  margin: 0 auto;
   width: 100%;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .comparison-card {
-  flex: 1;
-  min-width: 300px;
-  max-width: 400px;
-  padding: 2rem;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 320px;
+  padding: 1.25rem;
   background: rgba(220, 218, 211, 0.55);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 8px 24px rgba(0,0,0,0.04);
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.comparison-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.10);
 }
 
 .comparison-card h3 {
-  font-size: 1.3rem;
-  margin: 0 0 1.5rem;
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
   color: var(--text-dark);
 }
 
 .comparison-bar {
-  margin: 1rem 0;
+  margin: 0.65rem 0;
   text-align: left;
 }
 
 .comparison-bar-label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   opacity: 0.7;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
 .comparison-bar-fill {
-  height: 30px;
+  height: 24px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--bar-text);
   transition: width 0.6s ease;
 }
 
@@ -393,9 +400,9 @@ p {
 /* Dropdown */
 .controls {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   justify-content: center;
-  margin: 2rem 0;
+  margin: 1rem 0;
   flex-wrap: wrap;
 }
 
@@ -403,23 +410,23 @@ p {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .control-label {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   opacity: 0.8;
   color: var(--text-dark);
   font-weight: 500;
 }
 
 select {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.7rem;
   border-radius: 6px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   background: rgba(220, 218, 211, 0.6);
   color: var(--text-dark);
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -432,6 +439,11 @@ select:focus {
   outline: none;
   border-color: var(--color-human);
   background: rgba(220, 218, 211, 0.9);
+}
+
+select:focus-visible {
+  outline: 3px solid var(--text-dark);
+  outline-offset: 2px;
 }
 
 option {
@@ -448,8 +460,8 @@ option {
 }
 
 .credits a {
-  color: var(--color-human);
-  text-decoration: none;
+  color: var(--link-color);
+  text-decoration: underline;
   transition: opacity 0.3s;
 }
 
@@ -473,6 +485,11 @@ option {
 .restart-button:hover {
   opacity: 0.9;
   transform: scale(1.05);
+}
+
+.restart-button:focus-visible {
+  outline: 3px solid var(--text-dark);
+  outline-offset: 2px;
 }
 
 /* Fade overlay */
@@ -568,11 +585,35 @@ option {
   }
 
   .comparison-container {
+    flex-direction: column;
+    align-items: center;
     gap: 1rem;
   }
 
   .comparison-card {
-    min-width: 250px;
+    width: 100%;
+    max-width: 360px;
+    min-width: 0;
     padding: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  body {
+    animation: none;
+    background-position: 0% 50%;
+  }
+
+  .scroll-cue {
+    animation: none;
   }
 }

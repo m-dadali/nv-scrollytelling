@@ -138,12 +138,15 @@ function bootstrap() {
             .style("display", "none")
             .style("flex-direction", "column")
             .style("align-items", "center")
-            .style("justify-content", "center")
+            .style("justify-content", "space-around")
+            .style("padding", "24px 0")
+            .style("gap", "1.5rem")
+            .style("overflow-y", "auto")
             .style("z-index", "10")
             .style("pointer-events", "none");
 
         overlay.html(`
-            <div class="controls" style="pointer-events: auto; background: rgba(220,218,211,0.6); backdrop-filter: blur(8px); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 8px 24px rgba(0,0,0,0.04);">
+            <div class="controls" style="pointer-events: auto; background: rgba(220,218,211,0.6); backdrop-filter: blur(8px); padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 8px 24px rgba(0,0,0,0.04);">
               <div class="control-group">
                 <label class="control-label" for="treemap-year-select">Year</label>
                 <select id="treemap-year-select">
@@ -163,7 +166,7 @@ function bootstrap() {
                 </select>
               </div>
             </div>
-            <div class="comparison-container" id="comparison-container" style="pointer-events: auto;"></div>
+            <div class="comparison-container" id="comparison-container" style="pointer-events: auto; width: 100%; max-width: 900px; padding: 0 2rem;"></div>
         `);
 
         const bind = () => updateComparison();
@@ -186,8 +189,9 @@ function showFrame(step: number) {
     }
     
     d3.selectAll(".step").classed("is-active", false);
-    d3.selectAll(".step-content").style("display", "block");
+    d3.selectAll(".step-content").style("display", "none");
     d3.select(`.step[data-step='${step}']`).classed("is-active", true);
+    d3.select(`.step[data-step='${step}'] .step-content`).style("display", "block");
 
     const frameMap: Record<number, () => void> = {
         1: renderFrame1,
@@ -455,7 +459,8 @@ function drawChartAxes(domainMax?: number) {
     yScale.domain([0, domainMax ?? defaultMax]);
 
     const axisY = d3.axisLeft(yScale).tickFormat(d3.format(".0s"));
-    const axisX = d3.axisBottom(xScale).tickValues([minYear, selectedAreaYear]).tickFormat(d3.format("d"));
+    const tickCount = width < 600 ? 4 : 8;
+    const axisX = d3.axisBottom(xScale).ticks(tickCount).tickFormat(d3.format("d"));
 
     chartLayer.selectAll("g.chart-frame")
         .data([null])
@@ -624,7 +629,7 @@ function drawTreemap(source: CountrySummary[], opacity: number, highlightCountri
         .attr("stroke", "rgba(0,0,0,0.12)")
         .attr("stroke-width", 1);
 
-    node.on("click", (event, d) => {
+    node.on("click", (_event, d) => {
         const overlay = d3.select("#comparison-overlay");
         if (overlay.style("display") === "none") return;
 
@@ -657,7 +662,11 @@ function drawTreemap(source: CountrySummary[], opacity: number, highlightCountri
     node.select("text")
         .attr("x", 8)
         .attr("y", 18)
-        .attr("fill", "white")
+        .attr("fill", d => {
+            const c = d3.color(color(d.data.processedShare))?.rgb();
+            const lum = c ? (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255 : 0;
+            return lum > 0.6 ? "#1e1d1b" : "white";
+        })
         .attr("font-size", 11)
         .attr("font-weight", 600)
         .text(d => {
@@ -736,7 +745,7 @@ function updateComparison() {
                     .data([v])
                     .join("div")
                     .attr("class", `comparison-bar-fill fill-${v.key}`)
-                    .style("width", `${Math.max(8, v.pct)}%`)
+                    .style("width", `${Math.max(2, v.pct)}%`)
                     .text(`${v.pct.toFixed(0)}%`);
             });
     });
